@@ -1,0 +1,6 @@
+version: '2'
+services:
+    tescotills-couchbase:
+        image: couchbase:latest
+        ports:
+            - "8091:8091"

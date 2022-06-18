@@ -1,0 +1,46 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: orderservice
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: orderservice
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: orderservice
+        image: containervregistry.azurecr.io/order-0.0.1:latest
+        ports:
+        - containerPort: 8081
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: orderservice
+  namespace: default
+spec:
+  ports:
+  - name: tcp-template
+    protocol: TCP
+    port: 8081
+    targetPort: 8081
+  selector:
+    app: orderservice
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
